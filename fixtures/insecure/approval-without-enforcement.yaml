@@ -1,0 +1,9 @@
+apiVersion: agentproof.dev/v0alpha1
+kind: AgentAssuranceManifest
+metadata: {name: sample-approval-without-enforcement}
+identity: {source: declared, principal: workload://example/test, credentialLifetimeMinutes: 10}
+protocols: []
+capabilities:
+  - {id: tickets.write, source: declared, operation: write, risk: medium, scopes: [tickets:write], approval: required}
+access: {source: declared, delegatedScopes: [tickets:write], networkEgress: [api.example.invalid]}
+controls: {humanApproval: {source: declared, status: pass}}

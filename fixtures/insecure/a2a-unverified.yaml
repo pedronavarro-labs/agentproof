@@ -1,0 +1,8 @@
+apiVersion: agentproof.dev/v0alpha1
+kind: AgentAssuranceManifest
+metadata: {name: sample-a2a-unverified}
+identity: {source: declared, principal: workload://example/test, credentialLifetimeMinutes: 10}
+protocols: [{type: a2a, source: declared, name: example-card}]
+capabilities: []
+access: {source: declared, delegatedScopes: [], networkEgress: [agent.example.invalid]}
+controls: {a2aCardSignature: {source: declared, status: pass}}

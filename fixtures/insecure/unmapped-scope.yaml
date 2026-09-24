@@ -1,0 +1,8 @@
+apiVersion: agentproof.dev/v0alpha1
+kind: AgentAssuranceManifest
+metadata: {name: sample-unmapped-scope}
+identity: {source: declared, principal: workload://example/test, credentialLifetimeMinutes: 10}
+protocols: []
+capabilities: []
+access: {source: declared, delegatedScopes: ['admin:*'], networkEgress: [api.example.invalid]}
+controls: {}

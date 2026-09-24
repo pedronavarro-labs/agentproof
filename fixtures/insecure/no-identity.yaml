@@ -1,0 +1,8 @@
+apiVersion: agentproof.dev/v0alpha1
+kind: AgentAssuranceManifest
+metadata: {name: sample-no-identity}
+identity: {source: declared}
+protocols: []
+capabilities: []
+access: {source: declared, delegatedScopes: [], networkEgress: []}
+controls: {}

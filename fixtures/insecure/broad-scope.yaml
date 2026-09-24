@@ -1,0 +1,14 @@
+apiVersion: agentproof.dev/v0alpha1
+kind: AgentAssuranceManifest
+metadata: {name: sample-broad-scope}
+identity: {source: declared, principal: 'user:example', credentialLifetimeMinutes: 1440}
+protocols: [{type: mcp, source: declared, name: write-tools, authorization: true}]
+capabilities:
+  - id: tickets.delete
+    source: declared
+    operation: delete
+    risk: high
+    scopes: [tickets:delete]
+    approval: none
+access: {source: declared, delegatedScopes: [tickets:delete, admin:*], networkEgress: ['*']}
+controls: {tokenAudienceBinding: {source: declared, status: pass}}
