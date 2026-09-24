@@ -1,0 +1,33 @@
+name: AgentProof baseline
+description: Validate an Agent Assurance Manifest and publish a local baseline report
+inputs:
+  manifest:
+    description: Path to a committed AAM YAML or JSON file
+    required: true
+  fail-on:
+    description: Minimum finding severity that fails the check
+    default: high
+runs:
+  using: composite
+  steps:
+    - name: Install AgentProof from this action revision
+      shell: bash
+      run: python -m pip install "${{ github.action_path }}"
+    - name: Generate report
+      shell: bash
+      env:
+        AGENTPROOF_MANIFEST: ${{ inputs.manifest }}
+        AGENTPROOF_FAIL_ON: ${{ inputs.fail-on }}
+      run: |
+        agentproof verify "$AGENTPROOF_MANIFEST" --format markdown --output agentproof-report.md --fail-on none
+        cat agentproof-report.md >> "$GITHUB_STEP_SUMMARY"
+        agentproof verify "$AGENTPROOF_MANIFEST" --format json --output agentproof-report.json --fail-on "$AGENTPROOF_FAIL_ON"
+    - name: Upload report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: agentproof-report
+        path: |
+          agentproof-report.md
+          agentproof-report.json
+        if-no-files-found: ignore

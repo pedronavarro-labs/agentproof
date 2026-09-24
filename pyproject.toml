@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=70"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentproof-aam"
+version = "0.1.0a1"
+description = "Local evidence-oriented review for AI agent permissions and MCP configuration"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+authors = [{name = "Pedro Navarro"}]
+dependencies = ["PyYAML>=6,<7", "jsonschema>=4.20,<5"]
+classifiers = ["Development Status :: 3 - Alpha", "Programming Language :: Python :: 3"]
+
+[project.scripts]
+agentproof = "agentproof.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+agentproof = ["schemas/*.json"]
