@@ -1,0 +1,48 @@
+apiVersion: agentproof.dev/v0alpha1
+kind: AgentAssuranceManifest
+metadata:
+  name: sample-support-agent
+  revision: 0123456789abcdef0123456789abcdef01234567
+identity:
+  source: declared
+  principal: workload://example/support
+  authentication: oauth2
+  credentialLifetimeMinutes: 15
+protocols:
+  - type: mcp
+    source: declared
+    name: sample-tools
+    authorization: true
+capabilities:
+  - id: tickets.read
+    source: declared
+    tool: tickets.search
+    operation: read
+    risk: low
+    scopes: [tickets:read]
+  - id: tickets.update
+    source: declared
+    tool: tickets.update_status
+    operation: write
+    risk: high
+    scopes: [tickets:write]
+    approval: required
+    rollback: Restore the prior ticket status using the audit record.
+access:
+  source: declared
+  delegatedScopes: [tickets:read, tickets:write]
+  networkEgress: [tools.example.invalid]
+  dataClasses: [synthetic]
+controls:
+  humanApproval:
+    source: declared
+    status: pass
+    enforcementPoint: example-review-queue
+  tokenAudienceBinding:
+    source: verified
+    status: pass
+    evidenceRef: audience-test
+evidence:
+  - id: audience-test
+    description: Illustrative synthetic record; replace with real verification before deployment.
+

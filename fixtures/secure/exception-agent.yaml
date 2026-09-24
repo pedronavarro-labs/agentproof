@@ -1,0 +1,15 @@
+apiVersion: agentproof.dev/v0alpha1
+kind: AgentAssuranceManifest
+metadata: {name: sample-exception, revision: 0123456789abcdef0123456789abcdef01234567}
+identity: {source: declared, principal: workload://example/exception, credentialLifetimeMinutes: 10}
+protocols: [{type: mcp, source: declared, name: reversible-demo}]
+capabilities:
+  - id: demo.update
+    source: declared
+    operation: write
+    risk: medium
+    scopes: [demo:write]
+    approval: exception
+    exceptionReason: Synthetic demonstration only; no protected resource exists.
+access: {source: declared, delegatedScopes: [demo:write], networkEgress: [demo.example.invalid]}
+controls: {}

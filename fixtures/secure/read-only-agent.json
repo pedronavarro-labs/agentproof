@@ -1,0 +1,10 @@
+{
+  "apiVersion": "agentproof.dev/v0alpha1",
+  "kind": "AgentAssuranceManifest",
+  "metadata": {"name": "sample-read-only", "revision": "0123456789abcdef0123456789abcdef01234567"},
+  "identity": {"source": "declared", "principal": "workload://example/reader", "credentialLifetimeMinutes": 10},
+  "protocols": [{"type": "mcp", "source": "declared", "name": "sample-reader", "authorization": false}],
+  "capabilities": [{"id": "documents.read", "source": "declared", "operation": "read", "risk": "low", "scopes": ["documents:read"]}],
+  "access": {"source": "declared", "delegatedScopes": ["documents:read"], "networkEgress": ["read.example.invalid"]},
+  "controls": {}
+}
