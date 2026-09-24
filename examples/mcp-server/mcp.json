@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "sample-tickets": {
+      "url": "https://tools.example.invalid/mcp?api_key=FAKE_DO_NOT_USE",
+      "headers": {"Authorization": "Bearer FAKE_DO_NOT_USE"}
+    },
+    "sample-local": {
+      "command": "python",
+      "args": ["fake_server.py", "--token", "FAKE_DO_NOT_USE"],
+      "env": {"FAKE_TOKEN": "FAKE_DO_NOT_USE"}
+    }
+  }
+}
