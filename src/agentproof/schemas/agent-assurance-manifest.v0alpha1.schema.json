@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/pedronavarro-labs/agentproof/blob/main/schemas/agent-assurance-manifest.v0alpha1.schema.json",
+  "title": "Agent Assurance Manifest v0alpha1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "metadata", "identity", "protocols", "capabilities", "access", "controls"],
+  "properties": {
+    "apiVersion": {"const": "agentproof.dev/v0alpha1"},
+    "kind": {"const": "AgentAssuranceManifest"},
+    "metadata": {
+      "type": "object", "additionalProperties": false, "required": ["name"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "version": {"type": "string"},
+        "repository": {"type": "string"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"}
+      }
+    },
+    "identity": {
+      "type": "object", "additionalProperties": false, "required": ["source"],
+      "properties": {
+        "source": {"$ref": "#/$defs/source"},
+        "principal": {"type": "string"},
+        "authentication": {"type": "string"},
+        "credentialLifetimeMinutes": {"type": "integer", "minimum": 1}
+      }
+    },
+    "protocols": {
+      "type": "array", "items": {
+        "type": "object", "additionalProperties": false, "required": ["type", "source"],
+        "properties": {
+          "type": {"enum": ["mcp", "a2a", "custom"]},
+          "source": {"$ref": "#/$defs/source"},
+          "name": {"type": "string"},
+          "endpoint": {"type": "string"},
+          "command": {"type": "string"},
+          "authorization": {"type": "boolean"}
+        }
+      }
+    },
+    "capabilities": {
+      "type": "array", "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "source", "operation", "risk", "scopes"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "source": {"$ref": "#/$defs/source"},
+          "tool": {"type": "string"},
+          "operation": {"enum": ["read", "write", "delete", "payment"]},
+          "risk": {"enum": ["low", "medium", "high"]},
+          "scopes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "approval": {"enum": ["required", "exception", "none"]},
+          "exceptionReason": {"type": "string"},
+          "rollback": {"type": "string"}
+        }
+      }
+    },
+    "access": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source", "delegatedScopes", "networkEgress"],
+      "properties": {
+        "source": {"$ref": "#/$defs/source"},
+        "delegatedScopes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "networkEgress": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "dataClasses": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "controls": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "humanApproval": {"$ref": "#/$defs/control"},
+        "tokenAudienceBinding": {"$ref": "#/$defs/control"},
+        "egressAllowlist": {"$ref": "#/$defs/control"},
+        "a2aCardSignature": {"$ref": "#/$defs/control"}
+      }
+    },
+    "evidence": {"type": "array", "items": {
+      "type": "object", "additionalProperties": false, "required": ["id", "description"],
+      "properties": {"id": {"type": "string", "minLength": 1}, "description": {"type": "string", "minLength": 1}, "uri": {"type": "string"}}
+    }}
+  },
+  "$defs": {
+    "source": {"enum": ["discovered", "declared", "verified"]},
+    "control": {
+      "type": "object", "additionalProperties": false, "required": ["source", "status"],
+      "properties": {
+        "source": {"$ref": "#/$defs/source"},
+        "status": {"enum": ["pass", "fail", "unknown"]},
+        "enforcementPoint": {"type": "string"},
+        "evidenceRef": {"type": "string"}
+      }
+    }
+  }
+}
