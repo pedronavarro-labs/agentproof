@@ -1,0 +1,21 @@
+name: AAM RFC or fixture feedback
+description: Propose a concrete schema or baseline improvement using synthetic data
+title: "RFC feedback: "
+body:
+  - type: markdown
+    attributes:
+      value: "Use only synthetic data. Do not include credentials, private hostnames or production configurations."
+  - type: textarea
+    id: problem
+    attributes:
+      label: What cannot be represented or which finding is misleading?
+      description: Point to a specific field or policy ID.
+    validations:
+      required: true
+  - type: textarea
+    id: fixture
+    attributes:
+      label: Minimal synthetic fixture and expected result
+      description: Include a small redacted YAML/JSON example.
+    validations:
+      required: true
