@@ -32,6 +32,16 @@ Pin to a reviewed commit SHA for production use. The composite Action installs i
 
 The AAM JSON Schema lives in [`schemas/`](schemas/), with a packaged mirror used by the CLI. Fields distinguish `discovered`, `declared` and `verified`. A `verified` value is still a claim supplied by the manifest author; this alpha checks that evidence IDs exist, not the authenticity or enforcement of that evidence. Reports always state this limit.
 
+## Experimental runtime pilot
+
+An optional [in-process tool gate](docs/runtime-pilot.md) lets a trusted host route synthetic MCP-style tool calls through the manifest. The demo permits a declared read and denies an undeclared write **before** its handler runs:
+
+```bash
+python examples/runtime-demo/demo.py
+```
+
+The gate is a library example, not a general MCP server, proxy or automatic interception mechanism. It requires the host to own the tool bindings and scope information and to route all calls through it. It currently denies every state-changing action, including declared writes, because there is no trusted approval integration. It does not authenticate the caller, verify real token scopes, detect bypasses or prove deployed enforcement. The static CI report remains a declaration review.
+
 The baseline includes AP-001 through AP-010. Rules apply when relevant: for example, A2A signature evidence is evaluated only if an A2A protocol entry exists. A2A discovery, signature verification and signed attestations are planned, not implemented. See the [RFC](docs/rfc/0001-agent-assurance-manifest.md), [threat model](docs/threat-model.md), [roadmap](ROADMAP.md) and [contribution guide](CONTRIBUTING.md).
 
 ## Give useful feedback
