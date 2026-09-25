@@ -11,6 +11,9 @@ requires-python = ">=3.10"
 license = "Apache-2.0"
 authors = [{name = "Pedro Navarro"}]
 dependencies = ["PyYAML>=6,<7", "jsonschema>=4.20,<5"]
+
+[project.optional-dependencies]
+google = ["google-auth>=2.30,<3", "google-auth-oauthlib>=1.2,<2"]
 classifiers = ["Development Status :: 3 - Alpha", "Programming Language :: Python :: 3"]
 
 [project.scripts]
