@@ -1,0 +1,26 @@
+apiVersion: agentproof.dev/v0alpha1
+kind: AgentAssuranceManifest
+metadata:
+  name: synthetic-ticket-reader
+  revision: 0123456789abcdef0123456789abcdef01234567
+identity:
+  source: declared
+  principal: workload://example/ticket-reader
+  credentialLifetimeMinutes: 10
+protocols:
+  - type: mcp
+    source: declared
+    name: synthetic-ticket-tools
+    authorization: false
+capabilities:
+  - id: tickets.read
+    source: declared
+    tool: tickets.get
+    operation: read
+    risk: low
+    scopes: [tickets:read]
+access:
+  source: declared
+  delegatedScopes: [tickets:read]
+  networkEgress: [tools.example.invalid]
+controls: {}
