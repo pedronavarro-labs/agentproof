@@ -30,12 +30,14 @@ class RuntimeGuard:
     closed until a trusted approval integration is designed.
     """
 
-    def __init__(self, manifest: dict, tools: Mapping[str, Tool], granted_scopes: set[str]):
+    def __init__(self, manifest: dict, tools: Mapping[str, Tool], granted_scopes: set[str], audit: Callable[[dict[str, str]], None] | None = None):
         validate(manifest)
         self.tools = dict(tools)
         self.granted_scopes = frozenset(granted_scopes)
         self.declared_scopes = frozenset(manifest["access"]["delegatedScopes"])
         self.subject = manifest["metadata"]["name"]
+        self.revision = manifest["metadata"]["revision"]
+        self.audit = audit
         self.events: list[dict[str, str]] = []
         self.capabilities = {}
         for capability in manifest["capabilities"]:
@@ -60,10 +62,34 @@ class RuntimeGuard:
         required = set(capability["scopes"])
         if not required or not required.issubset(self.granted_scopes) or not required.issubset(self.declared_scopes):
             return self._deny(tool_name, "scope_not_granted")
-        self.events.append({"tool": tool_name, "decision": "allow", "reason": "declared_read_with_scope"})
+        self._record(tool_name, "allow", "declared_read_with_scope")
         # Neither arguments nor return values are copied into the audit trail.
         return binding.handler(arguments)
 
     def _deny(self, tool_name: str, reason: str) -> None:
-        self.events.append({"tool": tool_name, "decision": "deny", "reason": reason})
+        self._record(tool_name, "deny", reason)
         raise Denied(f"{tool_name}: {reason}")
+
+    def reject(self, tool_name: str, reason: str) -> None:
+        """Record a transport-level denial before a handler is considered."""
+        self._deny(tool_name, reason)
+
+    def _record(self, tool_name: str, decision: str, reason: str) -> None:
+        event = {"subject": self.subject, "revision": self.revision,
+                 "tool": tool_name, "decision": decision, "reason": reason}
+        # A configured durable audit must succeed before any handler executes.
+        if self.audit is not None:
+            self.audit(event)
+        self.events.append(event)
+
+    def listed_reads(self) -> set[str]:
+        """Expose only tools that this instance could dispatch as reads."""
+        allowed = set()
+        for name, cap in self.capabilities.items():
+            binding = self.tools.get(name)
+            required = set(cap["scopes"])
+            if (binding is not None and binding.operation == cap["operation"] == "read"
+                    and required and required <= self.granted_scopes
+                    and required <= self.declared_scopes):
+                allowed.add(name)
+        return allowed
