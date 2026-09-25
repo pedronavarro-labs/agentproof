@@ -1,0 +1,8 @@
+# Copy to a private host configuration; do not commit real values.
+AGENTPROOF_IDENTITY_PROVIDER=google
+AGENTPROOF_GOOGLE_AGENT_AUDIENCE=agentproof-example-audience
+AGENTPROOF_GOOGLE_AGENT_SUB=REPLACE_WITH_SERVICE_ACCOUNT_UNIQUE_ID
+AGENTPROOF_GOOGLE_CLIENT_CONFIG=/private/path/to/google-desktop-client.json
+AGENTPROOF_GOOGLE_REVIEWER_SUB=REPLACE_WITH_GOOGLE_ACCOUNT_SUB
+AGENTPROOF_APPROVAL_DB=/private/path/to/approvals.sqlite3
+AGENTPROOF_AUDIT_DB=/private/path/to/decisions.sqlite3
