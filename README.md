@@ -42,6 +42,8 @@ python examples/runtime-demo/demo.py
 
 The gate is a library example, not a general MCP server, proxy or automatic interception mechanism. It requires the host to own the tool bindings and scope information and to route all calls through it. It currently denies every state-changing action, including declared writes, because there is no trusted approval integration. It does not authenticate the caller, verify real token scopes, detect bypasses or prove deployed enforcement. The static CI report remains a declaration review.
 
+An additional [MCP stdio pilot](docs/mcp-stdio-security.md) processes real JSON-RPC `initialize`, `tools/list` and `tools/call` messages. Try `python examples/mcp-runtime/client_demo.py` after installing the package. It exposes only authorized read tools and writes decision metadata to a local SQLite file. The client and ticket are synthetic; this is not an authenticated or production-ready gateway.
+
 The baseline includes AP-001 through AP-010. Rules apply when relevant: for example, A2A signature evidence is evaluated only if an A2A protocol entry exists. A2A discovery, signature verification and signed attestations are planned, not implemented. See the [RFC](docs/rfc/0001-agent-assurance-manifest.md), [threat model](docs/threat-model.md), [roadmap](ROADMAP.md) and [contribution guide](CONTRIBUTING.md).
 
 ## Give useful feedback
