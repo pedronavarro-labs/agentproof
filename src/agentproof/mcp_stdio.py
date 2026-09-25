@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 import sys
-from typing import Any, Mapping, TextIO
+from typing import Any, Callable, Mapping, TextIO
 
 from jsonschema import Draft202012Validator
 
@@ -16,8 +16,10 @@ from .runtime import Denied, RuntimeGuard
 
 
 class MCPStdioServer:
-    def __init__(self, guard: RuntimeGuard, definitions: Mapping[str, dict[str, Any]]):
+    def __init__(self, guard: RuntimeGuard, definitions: Mapping[str, dict[str, Any]],
+                 *, guard_provider: Callable[[], RuntimeGuard] | None = None):
         self.guard = guard
+        self.guard_provider = guard_provider
         self.definitions = dict(definitions)
         for name, definition in self.definitions.items():
             if definition.get("name") != name or not isinstance(definition.get("inputSchema"), dict):
@@ -49,10 +51,15 @@ class MCPStdioServer:
             return self._error(request, -32000, "Not initialized")
         if method == "ping":
             return self._result(request, {})
+        if method in ("tools/list", "tools/call"):
+            try:
+                guard = self.guard_provider() if self.guard_provider else self.guard
+            except Exception:
+                return self._error(request, -32001, "Authorization unavailable")
         if method == "tools/list":
             if request.get("params", {}) not in ({}, None):
                 return self._error(request, -32602, "Invalid params")
-            tools = [self.definitions[name] for name in sorted(self.guard.listed_reads())
+            tools = [self.definitions[name] for name in sorted(guard.listed_tools())
                      if name in self.definitions]
             return self._result(request, {"tools": tools})
         if method == "tools/call":
@@ -63,7 +70,7 @@ class MCPStdioServer:
             if name not in self.definitions:
                 # Still record a denial in the guard; no handler can run.
                 try:
-                    self.guard.call(name, params.get("arguments", {}))
+                    guard.call(name, params.get("arguments", {}))
                 except Denied:
                     pass
                 except Exception:
@@ -72,8 +79,8 @@ class MCPStdioServer:
             try:
                 args = params.get("arguments", {})
                 if not Draft202012Validator(self.definitions[name]["inputSchema"]).is_valid(args):
-                    self.guard.reject(name, "invalid_arguments")
-                value = self.guard.call(name, args)
+                    guard.reject(name, "invalid_arguments")
+                value = guard.call(name, args)
             except Denied as exc:
                 return self._result(request, {"content": [{"type": "text", "text": str(exc)}], "isError": True})
             except Exception:
