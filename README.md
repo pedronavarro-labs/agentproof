@@ -44,6 +44,8 @@ The gate is a library example, not a general MCP server, proxy or automatic inte
 
 An additional [MCP stdio pilot](docs/mcp-stdio-security.md) processes real JSON-RPC `initialize`, `tools/list` and `tools/call` messages. Try `python examples/mcp-runtime/client_demo.py` after installing the package. It exposes only authorized read tools and writes decision metadata to a local SQLite file. The client and ticket are synthetic; this is not an authenticated or production-ready gateway.
 
+An opt-in [verified identity and one-use approval pilot](docs/verified-approval-pilot.md) adds RFC 7662 introspection against a configured external identity provider on every tool operation. A separate reviewer process authenticates a different human principal and approves the exact write once. The provider, credentials and human reviewer must be supplied by the deploying host; the examples do not contain or simulate a real account. This remains a local `stdio` integration, not an MCP HTTP authorization implementation or a production security guarantee.
+
 The baseline includes AP-001 through AP-010. Rules apply when relevant: for example, A2A signature evidence is evaluated only if an A2A protocol entry exists. A2A discovery, signature verification and signed attestations are planned, not implemented. See the [RFC](docs/rfc/0001-agent-assurance-manifest.md), [threat model](docs/threat-model.md), [roadmap](ROADMAP.md) and [contribution guide](CONTRIBUTING.md).
 
 ## Give useful feedback
